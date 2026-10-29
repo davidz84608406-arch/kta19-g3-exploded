@@ -1,0 +1,22 @@
+{
+  "name": "kta19-g3-exploded-view",
+  "version": "1.0.0",
+  "description": "Interactive Three.js exploded view of a Cummins KTA19-G3 genset with a Stamford alternator.",
+  "main": "index.js",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fontsource/barlow-condensed": "^5.1.1",
+    "@fontsource/ibm-plex-mono": "^5.1.1",
+    "@fontsource/manrope": "^5.1.1",
+    "esbuild": "^0.24.0",
+    "puppeteer-core": "^23.9.0",
+    "three": "^0.169.0"
+  },
+  "private": true
+}

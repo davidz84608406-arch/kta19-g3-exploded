@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<!--
+  KTA19-G3 x STAMFORD — non-official interactive structural visualisation.
+  Three.js r169 — Copyright (c) 2010-2024 three.js authors. MIT License.
+  Barlow Condensed, Manrope, IBM Plex Mono — SIL Open Font License 1.1.
+  Vehicle names and trademarks belong to their respective owners.
+  This scene is an original procedural reconstruction, not manufacturer CAD.
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#060909" />
+  <meta name="color-scheme" content="dark" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%230a0f10'/%3E%3Cpath d='M45 18a18 18 0 1 0 0 28' fill='none' stroke='%23ef6b45' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M32 23v18M23 32h18' stroke='%23eceae3' stroke-width='2' opacity='.4'/%3E%3C/svg%3E" />
+  <meta name="description" content="Cummins KTA19-G3 × Stamford 发电机组交互式 Three.js 爆炸图。可拖动分解、聚焦部件并查看结构说明。" />
+  <title>KTA19-G3 × STAMFORD — 交互式爆炸图</title>
+  <style>
+/* __INLINE_CSS__ */
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="world-lines" aria-hidden="true"></div>
+    <div class="world-horizon" aria-hidden="true"></div>
+    <canvas class="scene" id="scene" role="img" aria-label="Cummins KTA19-G3 与 Stamford 交流发电机的三维爆炸视图"></canvas>
+    <div class="vignette" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M18.2 5.9A8.1 8.1 0 1 0 18.2 18.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+            <path d="M12 8.1v7.8M8.1 12h7.8" stroke="currentColor" stroke-width="1.1" opacity=".45" />
+          </svg>
+        </div>
+        <div class="brand-copy">
+          <strong>INDUSTRIAL / 19</strong>
+          <span>UNOFFICIAL STRUCTURAL STUDY</span>
+        </div>
+      </div>
+      <div class="top-meta">
+        <div class="top-model">500 kVA<i>/</i>50 HZ<i>/</i>1500 RPM</div>
+        <div class="status"><i></i>INTERACTIVE 3D</div>
+      </div>
+    </header>
+
+    <section class="hero" aria-label="产品介绍">
+      <div class="eyebrow">
+        <span class="eyebrow-rule"></span>
+        <span>CUMMINS DIESEL GENSET</span>
+        <b>50 HZ</b>
+      </div>
+      <h1 class="title">
+        <span class="title-kta">KTA19</span><span class="title-suffix">-G3</span>
+      </h1>
+      <div class="product-line">
+        <span class="rule"></span>
+        <span class="x">×</span>
+        <strong>STAMFORD</strong>
+        <span class="model">HCI544</span>
+      </div>
+      <p class="lede">
+        康明斯 18.9 L 直列六缸柴油机，连接斯坦福无刷同步电机。<br />
+        从<em>动力端</em>到<em>发电端</em>，逐层拆解一台 500 kVA 级机组。
+      </p>
+      <dl class="specs">
+        <div>
+          <dt>STANDBY / 备用功率</dt>
+          <dd>500<span>kVA</span></dd>
+        </div>
+        <div>
+          <dt>PRIME / 主用功率</dt>
+          <dd>450<span>kVA</span></dd>
+        </div>
+        <div>
+          <dt>DISPLACEMENT / 排量</dt>
+          <dd>18.9<span>L</span></dd>
+        </div>
+        <div>
+          <dt>SPEED / 额定转速</dt>
+          <dd>1 500<span>rpm</span></dd>
+        </div>
+      </dl>
+      <div class="interaction-hint">
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <rect x="4.8" y="1.5" width="6.4" height="10.6" rx="3.2" stroke="currentColor" stroke-width="1.1" />
+          <path d="M8 4v2.1" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" />
+          <path d="M8 12.8v1.7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" opacity=".35" />
+        </svg>
+        <span>拖拽旋转 · 滚轮缩放 · 点击部件聚焦</span>
+      </div>
+    </section>
+
+    <aside class="side-panel" id="sidePanel" aria-label="部件索引与详情">
+      <div class="panel-view panel-index" id="panelIndex">
+        <div class="panel-head">
+          <span>STRUCTURE INDEX</span>
+          <span class="count">10 UNITS</span>
+          <button class="drawer-close" type="button" aria-label="关闭部件索引">
+            <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 2.5 11.5 11.5M11.5 2.5 2.5 11.5" /></svg>
+          </button>
+        </div>
+        <ol class="parts-list" id="partsList"></ol>
+        <div class="panel-foot">
+          <button class="canopy-toggle" id="canopyToggle" type="button" role="switch" aria-checked="false">
+            <span class="toggle-copy">
+              <svg viewBox="0 0 18 18" aria-hidden="true">
+                <path d="M2.7 7.2 9 3.3l6.3 3.9v7.1H2.7V7.2Z" />
+                <path d="M5.8 14.3V9.1h6.4v5.2M6.4 6.3h.1" />
+              </svg>
+              <span>
+                <b>静音外罩</b>
+                <small>SILENT CANOPY</small>
+              </span>
+            </span>
+            <span class="switch" aria-hidden="true"></span>
+          </button>
+          <button class="sources-button" id="sourcesButton" type="button">
+            <span>数据来源 / DISCLAIMER</span>
+            <span>↗</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-view panel-detail" id="panelDetail" hidden>
+        <div class="detail-top">
+          <button class="detail-back" id="detailBack" type="button">
+            <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M11.5 7H2.8M6.2 3.4 2.5 7l3.7 3.6" /></svg>
+            INDEX
+          </button>
+          <span class="detail-count" id="detailCount">01 / 10</span>
+          <button class="drawer-close" type="button" aria-label="关闭部件索引">
+            <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 2.5 11.5 11.5M11.5 2.5 2.5 11.5" /></svg>
+          </button>
+        </div>
+        <div class="detail-kicker">SELECTED ASSEMBLY</div>
+        <h2 class="detail-zh" id="detailZh"></h2>
+        <div class="detail-en" id="detailEn"></div>
+        <div class="detail-title" id="detailTitle"></div>
+        <p class="detail-desc" id="detailDesc"></p>
+        <dl class="detail-facts" id="detailFacts"></dl>
+        <div class="detail-nav">
+          <button class="nav-prev" id="detailPrev" type="button">
+            <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M11.5 7H2.8M6.2 3.4 2.5 7l3.7 3.6" /></svg>
+            PREV
+          </button>
+          <button class="nav-next" id="detailNext" type="button">
+            NEXT
+            <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7h8.7M7.8 3.4 11.5 7l-3.7 3.6" /></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="labels-lines" aria-hidden="true">
+      <svg id="leaderSvg" width="100%" height="100%"></svg>
+    </div>
+    <div class="labels-layer" id="labelsLayer" aria-label="部件标注"></div>
+
+    <div class="panel-scrim" id="panelScrim" aria-hidden="true"></div>
+    <button class="mobile-panel-button" id="mobilePanelButton" type="button" aria-controls="sidePanel" aria-expanded="false">
+      <span>10</span>
+      PARTS INDEX
+    </button>
+
+    <button class="mobile-focus-pill" id="mobileFocusPill" type="button" aria-controls="sidePanel">
+      <span class="mfp-num" id="mobileFocusNum">01</span>
+      <span class="mfp-copy">
+        <strong id="mobileFocusName">柴油发动机</strong>
+        <small>查看部件详情 / VIEW PART</small>
+      </span>
+      <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7h8.7M7.8 3.4 11.5 7l-3.7 3.6" /></svg>
+    </button>
+
+    <div class="bottom-bar" aria-label="爆炸图控制">
+      <div class="explode-control">
+        <button class="play-button" id="playButton" type="button" aria-label="播放分解或合拢动画" title="展开 / 合拢">
+          <svg class="icon-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.4 2.7 13 8l-8.6 5.3V2.7Z" /></svg>
+          <svg class="icon-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.6 3.2 8 6.6l3.4-3.4M4.6 12.8 8 9.4l3.4 3.4" /></svg>
+        </button>
+        <div class="slider-block">
+          <div class="slider-meta">
+            <span>EXPLODE / 分解</span>
+            <span class="percent" id="percent">00%</span>
+          </div>
+          <input class="range" id="explodeRange" type="range" min="0" max="100" step="1" value="0" aria-label="控制爆炸分解程度" />
+          <div class="slider-axis"><span>ASSEMBLED</span><span>EXPLODED</span></div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button class="tool active" id="labelsTool" type="button" aria-label="显示或隐藏部件标注" aria-pressed="true" title="显示 / 隐藏部件标注">
+          <svg viewBox="0 0 18 18" aria-hidden="true">
+            <path d="M3 3.2h5.1l6.9 6.9-5.1 5.1L3 8.3V3.2Z" />
+            <circle cx="6.4" cy="6.5" r="1.1" />
+          </svg>
+          <span>标注</span>
+        </button>
+        <button class="tool" id="canopyTool" type="button" aria-label="显示或隐藏静音外罩" aria-pressed="false" title="显示 / 隐藏静音外罩">
+          <svg viewBox="0 0 18 18" aria-hidden="true">
+            <path d="M2.6 7.3 9 3.2l6.4 4.1v7.4H2.6V7.3Z" />
+            <path d="M5.7 14.7V9.2h6.6v5.5M6.4 6.2h.1" />
+          </svg>
+          <span>外罩</span>
+        </button>
+        <button class="tool" id="rotateTool" type="button" aria-label="开启或关闭自动旋转" aria-pressed="false" title="开启 / 关闭自动旋转">
+          <svg viewBox="0 0 18 18" aria-hidden="true">
+            <path d="M14.3 7.1A6 6 0 1 0 15 10.7" />
+            <path d="M14.7 3.3v4h-4" />
+          </svg>
+          <span>旋转</span>
+        </button>
+        <button class="tool" id="resetTool" type="button" aria-label="重置视角" title="重置视角">
+          <svg viewBox="0 0 18 18" aria-hidden="true">
+            <path d="M3.3 6.4V2.8M3.3 2.8h3.6" />
+            <path d="M3.6 3a6.6 6.6 0 1 1-1.2 7.4" />
+          </svg>
+          <span>重置</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="page-meta">
+      <span>NON-OFFICIAL VISUAL STUDY</span>
+      <span class="meta-divider"></span>
+      <span>CUMMINS KTA19-G3 × STAMFORD</span>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="hover-tip" id="hoverTip"><b></b><span></span></div>
+
+    <div class="modal-backdrop" id="sourcesModal" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="sourcesTitle">
+        <button class="modal-close" id="modalClose" type="button" aria-label="关闭资料弹窗">
+          <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 2.5 11.5 11.5M11.5 2.5 2.5 11.5" /></svg>
+        </button>
+        <div class="modal-kicker">PROJECT NOTES / 资料说明</div>
+        <h2 id="sourcesTitle">关于这台机组</h2>
+        <p>
+          这是一次以公开样本为参考的 Three.js 三维视觉研究：用程序化几何重建 Cummins KTA19-G3
+          柴油机、Stamford HCI544 系列交流电机，以及散热器、排气消声器、空滤、控制屏、底座油箱等外部配件。
+        </p>
+        <p>
+          外观、比例、配色与配件布局经过艺术化处理，用于展示机组结构与爆炸关系，<strong>并非厂商 CAD 或工程图</strong>。
+        </p>
+        <div class="note">
+          页面参数按常见 50 Hz 配置展示：KTA19-G3 配 Stamford HCI544，备用 500 kVA / 400 kW，主用 450 kVA / 360 kW。
+          实际机组配置与功率标定会因年份、冷却方式和制造商而不同，请以发动机/发电机铭牌及正式数据表为准。
+        </div>
+        <h3>公开参考来源 / SOURCES</h3>
+        <ul>
+          <li>
+            <a href="http://www.cumins-china.com/jszc/fdjcs1/204.html" target="_blank" rel="noopener noreferrer">
+              <span>重庆康明斯 KTA19-G3 发动机技术参数<span>KTA19-G3 数据单：18.9 L、六缸、1500 rpm、干质量 1,855 kg</span></span>
+              <i>↗</i>
+            </a>
+          </li>
+          <li>
+            <a href="http://www.cumins-china.com/m/1604.html" target="_blank" rel="noopener noreferrer">
+              <span>420 kW 开架式 KTA19-G3A 机组配置<span>Stamford HCI544C1 · 开架机组尺寸与附件配置参考</span></span>
+              <i>↗</i>
+            </a>
+          </li>
+          <li>
+            <a href="https://cumins-power.com/product/tsjx/1358.html" target="_blank" rel="noopener noreferrer">
+              <span>500 kW 静音型康明斯机组技术规格<span>静音箱尺寸 4,600 × 1,600 × 2,300 mm 与 24 V 电启动配置参考</span></span>
+              <i>↗</i>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.keypower.com/kp-c450p-50hz-360kw-450kva-cummins-engine-kta19-g3-diesel-generator_p43.html" target="_blank" rel="noopener noreferrer">
+              <span>Keypower KP-C450P / KTA19-G3 机组<span>50 Hz、450 kVA 主用 / 500 kVA 备用功率口径参考</span></span>
+              <i>↗</i>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.stamford-avk.com/stamford-avk/sites/stamfordavk/files/HCI5E-26-TD-EN_Rev_B.pdf" target="_blank" rel="noopener noreferrer">
+              <span>Stamford HCI5E 系列技术数据表<span>HCI544 无刷同步发电机技术资料（PDF）</span></span>
+              <i>↗</i>
+            </a>
+          </li>
+        </ul>
+        <h3>技术信息 / CREDITS</h3>
+        <p>
+          Three.js r169 · WebGL2 · 程序化几何 / CanvasTexture / PBR 材质。<br />
+          Fonts: Barlow Condensed, Manrope, IBM Plex Mono (SIL Open Font License).<br />
+          Three.js is released under the MIT License.
+        </p>
+        <div class="modal-foot">
+          <span>NON-OFFICIAL 3D VISUALISATION</span>
+          <span>NO MANUFACTURER CAD USED</span>
+          <span>© 2026 / STRUCTURAL STUDY</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="loader" id="loader">
+      <div class="loader-inner">
+        <div class="loader-symbol" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M18.2 5.9A8.1 8.1 0 1 0 18.2 18.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            <path d="M12 8.1v7.8M8.1 12h7.8" stroke="currentColor" stroke-width="1" opacity=".45" />
+          </svg>
+        </div>
+        <div class="loader-title">KTA19-G3 × STAMFORD</div>
+        <div class="loader-sub">INITIALISING EXPLODED ASSEMBLY</div>
+        <div class="loader-track"><i id="loaderBar"></i></div>
+        <div class="loader-meta"><span>THREE.JS / WEBGL</span><b id="loaderPercent">00</b></div>
+      </div>
+    </div>
+
+    <noscript>
+      <div style="position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:24px;background:#060909;color:#eceae3;font-family:sans-serif;text-align:center;">
+        这个交互式 3D 页面需要启用 JavaScript。
+      </div>
+    </noscript>
+  </div>
+
+  <script>
+/* __INLINE_JS__ */
+  </script>
+</body>
+</html>
